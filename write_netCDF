@@ -1,0 +1,43 @@
+import numpy as np
+import netCDF4
+
+def out_file_gen(sampleFile,variable_name,fileOut = r'/data/pau/Temp/TEST.nc'):
+	#
+	# Read singleDay netcdf, get latlons
+	inData = netCDF4.Dataset( sampleFile , 'r' )
+	lons = inData.variables['lon'][:]
+	lats = inData.variables['lat'][:]
+	
+	fOut = netCDF4.Dataset(fileOut, "w", format="NETCDF4")
+	fOut.tCalculated = datetime.datetime.now().isoformat()
+	#fOut.originalProductId = productId
+	
+	times = np.arange(1, 13, 1)
+	fOut.createDimension('lon', len(lons))
+	fOut.createDimension('lat', len(lats))
+	fOut.createDimension('time', 12 )
+	
+	# Create output axis variables
+	lon = fOut.createVariable('lon', 'f4', ('lon',))
+	lon.units = 'degrees_east'
+	lon.long_name = 'longitude'
+	lon._CoordinateAxisType = 'Lon'
+	lon[:] = lons
+	
+	lat = fOut.createVariable('lat', 'f4', ('lat',))
+	lat.units = 'degrees_north'
+	lat.long_name = 'latitude'
+	lat._CoordinateAxisType = 'Lat'
+	lat[:] = lats
+	
+	time = fOut.createVariable('time', 'f8', ('time',))
+	time.units = 'month number [1-12]'
+	time.long_name = 'time'
+	time._CoordinateAxisType = 'Time'
+	time[:] = times
+	
+	# Create output data variable
+	# outData = fOut.createVariable(variable_name, 'f4', ('time', 'lat', 'lon',), zlib=True, least_significant_digit=3)
+	outData = fOut.createVariable(variable_name, 'f4', ('time', 'lat', 'lon',) )
+	
+	return outData,fOut
