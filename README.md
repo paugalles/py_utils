@@ -1,2 +1,2 @@
 # py_utils
-Python ideas/reminders/basics/utils for data science and geomapping
+Python minifuncs for data science and geomapping
